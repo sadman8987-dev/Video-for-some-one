@@ -1,5 +1,6 @@
 name: Import uploaded project
 on:
+  workflow_dispatch:
   push:
     branches: [import-telegram-media-bot]
 permissions:
