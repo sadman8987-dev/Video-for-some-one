@@ -9,7 +9,6 @@
 - نظام **Cookies** للفيديوهات المقيّدة بالعمر أو شبه الخاصة
 - صورة مصغّرة + عنوان + اسم القناة
 - أوامر: `/start` `/help` `/status` `/cookies`
-- Redis اختياري، ويمكن تشغيله كـ Worker على Railway
 
 ## التشغيل المحلي
 ```bash
@@ -55,5 +54,5 @@ Worker + Dockerfile + متغير `BOT_TOKEN` (مطلوب).
 
 بعد إضافة المتغيرات، أعد تشغيل/نشر الخدمة حتى تُقرأ الإعدادات الجديدة.
 
-
 <!-- Trigger project import workflow -->
+<!-- Safe import trigger: 2026-11-12 -->
