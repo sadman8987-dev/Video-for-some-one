@@ -1,0 +1,49 @@
+name: Import uploaded project
+on:
+  push:
+    branches: [import-telegram-media-bot]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: import-telegram-media-bot
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Replace repository contents with uploaded project
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil, tarfile
+          archive = Path("project-import.tar.gz")
+          with tarfile.open(archive, "r:gz") as tf:
+              members = tf.getmembers()
+              # Remove the previous project files, preserving only Git metadata.
+              for item in Path(".").iterdir():
+                  if item.name == ".git":
+                      continue
+                  shutil.rmtree(item) if item.is_dir() else item.unlink()
+              for member in members:
+                  parts = Path(member.name).parts
+                  if not parts or parts[0] != "telegram-media-bot" or len(parts) < 2:
+                      continue
+                  rel = Path(*parts[1:])
+                  target = Path(".") / rel
+                  if member.isdir():
+                      target.mkdir(parents=True, exist_ok=True)
+                      continue
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  source = tf.extractfile(member)
+                  if source is None:
+                      continue
+                  target.write_bytes(source.read())
+                  target.chmod(0o755 if member.mode & 0o111 else 0o644)
+          archive.unlink(missing_ok=True)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import Telegram media bot project files"
+          git push origin HEAD:import-telegram-media-bot
