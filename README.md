@@ -1,1 +1,41 @@
-# Video-for-some-one
+# Video Downloader Bot V2
+
+بوت تليجرام لتنزيل **الفيديو** و**الصوت (MP3)** من يوتيوب وتيك توك وإنستجرام وتويتر ولينكدإن وأكثر من 1000 موقع.
+
+## المميزات
+- فيديو أو صوت MP3 مع اختيار الجودة
+- **بلاي ليست يوتيوب** (حتى `MAX_PLAYLIST_ITEMS` فيديو)
+- دعم أفضل لإنستجرام (منشورات / ريلز / ستوريز عند توفر Cookies)
+- نظام **Cookies** للفيديوهات المقيّدة بالعمر أو شبه الخاصة
+- صورة مصغّرة + عنوان + اسم القناة
+- أوامر: `/start` `/help` `/status` `/cookies`
+- Redis اختياري، ويمكن تشغيله كـ Worker على Railway
+
+## التشغيل المحلي
+```bash
+git clone https://github.com/sadman8987-dev/Video-for-some-one.git
+cd Video-for-some-one
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# ثبّت FFmpeg
+export BOT_TOKEN="توكن_البوت"
+python main.py
+```
+
+## Cookies (ميزة معروفة)
+بعض المحتوى يحتاج جلسة متصفح:
+1. صدّر `cookies.txt` بصيغة Netscape من متصفحك
+2. حوّله Base64
+3. ضعه في:
+   - `YOUTUBE_COOKIES_BASE64` ليوتيوب
+   - `SOCIAL_COOKIES_BASE64` لإنستجرام/تيك توك/تويتر
+
+الأمر `/cookies` يعرض حالة التفعيل.
+
+## حدود
+- إرسال Telegram السحابي ≈ 49MB
+- DRM غير مدعوم
+- المحتوى الخاص تمامًا يحتاج حساب يملك صلاحية المشاهدة
+
+## Railway
+Worker + Dockerfile + متغير `BOT_TOKEN` (مطلوب).
