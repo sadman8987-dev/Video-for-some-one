@@ -39,3 +39,18 @@ python main.py
 
 ## Railway
 Worker + Dockerfile + متغير `BOT_TOKEN` (مطلوب).
+
+## Cookies لكل منصة على Railway
+
+يدعم البوت ملفات Cookies بصيغة Netscape بعد تحويلها إلى Base64. أضف المتغيرات التي تحتاجها فقط في Railway → Service → Variables:
+
+- `YOUTUBE_COOKIES_BASE64` — يوتيوب (موجود دعمه بالفعل في `youtube_handler.py`).
+- `TIKTOK_COOKIES_BASE64` — تيك توك.
+- `INSTAGRAM_COOKIES_BASE64` — إنستجرام.
+- `TWITTER_COOKIES_BASE64` أو `X_COOKIES_BASE64` — إكس.
+- `FACEBOOK_COOKIES_BASE64` — فيسبوك.
+- `SOCIAL_COOKIES_BASE64` — ملف اجتماعي عام احتياطي إذا لم يوجد متغير خاص بالمنصة.
+
+لا يحتوي أرشيف الإعدادات المرفق على Cookies فعلية؛ إنه يحتوي على أدوات مساعدة وأمثلة فقط. يجب تصدير ملف Cookies من حسابك بنفسك، ثم تحويله إلى Base64 وإضافته كمتغير سري في Railway. لا ترفع ملفات Cookies أو قيم Base64 إلى GitHub ولا تشاركها في المحادثات. استخدم جلسات حسابات تملكها، واحمِها لأنها تمنح وصولًا إلى حسابك.
+
+بعد إضافة المتغيرات، أعد تشغيل/نشر الخدمة حتى تُقرأ الإعدادات الجديدة.
