@@ -1,0 +1,10 @@
+aiogram>=3.13,<4.0
+yt-dlp[default] @ git+https://github.com/0xvd/yt-dlp-exp@fix_linkedin
+gallery-dl>=1.29
+streamlink>=7.0
+aiohttp>=3.10,<4.0
+bgutil-ytdlp-pot-provider==2.0.2
+redis>=5.0,<7.0
+sentry-sdk>=2.0,<3.0
+curl-cffi>=0.7
+requests>=2.31,<3.0
