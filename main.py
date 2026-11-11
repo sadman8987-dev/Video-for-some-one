@@ -126,20 +126,50 @@ def is_playlist_url(url: str) -> bool:
 
 
 def _extractor_options(url: str, folder: str | None = None) -> dict:
-    host = (urlparse(url).hostname or "").lower()
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
     options = {}
-    social_hosts = ("facebook.com", "instagram.com", "tiktok.com", "twitter.com", "x.com", "linkedin.com", "lnkd.in")
-    if any(host == domain or host.endswith("." + domain) for domain in social_hosts):
-        if SOCIAL_COOKIES_BASE64 and folder:
+
+    # Prefer platform-specific cookies; keep SOCIAL_COOKIES_BASE64 as a fallback
+    # for users who export one shared Netscape cookies file.
+    platform_cookies = (
+        ("youtube.com", "YOUTUBE_COOKIES_BASE64", "youtube-cookies.txt"),
+        ("youtu.be", "YOUTUBE_COOKIES_BASE64", "youtube-cookies.txt"),
+        ("instagram.com", "INSTAGRAM_COOKIES_BASE64", "instagram-cookies.txt"),
+        ("tiktok.com", "TIKTOK_COOKIES_BASE64", "tiktok-cookies.txt"),
+        ("vm.tiktok.com", "TIKTOK_COOKIES_BASE64", "tiktok-cookies.txt"),
+        ("twitter.com", "TWITTER_COOKIES_BASE64", "twitter-cookies.txt"),
+        ("x.com", "X_COOKIES_BASE64", "twitter-cookies.txt"),
+        ("facebook.com", "FACEBOOK_COOKIES_BASE64", "facebook-cookies.txt"),
+        ("fb.watch", "FACEBOOK_COOKIES_BASE64", "facebook-cookies.txt"),
+        ("fb.com", "FACEBOOK_COOKIES_BASE64", "facebook-cookies.txt"),
+    )
+    selected_env = None
+    selected_filename = None
+    for domain, env_name, filename in platform_cookies:
+        if host == domain or host.endswith("." + domain):
+            selected_env, selected_filename = env_name, filename
+            break
+
+    if selected_env and folder:
+        encoded = os.getenv(selected_env, "").strip()
+        if not encoded and selected_env != "YOUTUBE_COOKIES_BASE64":
+            encoded = SOCIAL_COOKIES_BASE64
+            selected_filename = "social-cookies.txt"
+        if encoded:
             try:
-                cookie_path = Path(folder) / "social-cookies.txt"
+                cookie_path = Path(folder) / selected_filename
                 if not cookie_path.exists():
-                    cookie_path.write_bytes(base64.b64decode(SOCIAL_COOKIES_BASE64, validate=True))
+                    raw = base64.b64decode(encoded, validate=True)
+                    if not raw.startswith((b"# Netscape HTTP Cookie File", b"# HTTP Cookie File")):
+                        raise ValueError("Cookie file is not in Netscape format")
+                    cookie_path.write_bytes(raw)
                     os.chmod(cookie_path, 0o600)
                 options["cookiefile"] = str(cookie_path)
             except Exception as exc:
-                log.warning("Social cookies could not be loaded (%s)", type(exc).__name__)
+                log.warning("%s could not be loaded (%s)", selected_env, type(exc).__name__)
+
     if is_youtube_url(url):
+        # youtube_handler handles YOUTUBE_COOKIES_BASE64 and PO Token options.
         options.update(youtube_extractor_options(folder))
     return options
 
