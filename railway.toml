@@ -1,0 +1,10 @@
+# Railway service config (optional but recommended)
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# Telegram long-polling bot: keep process always on
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+# No public HTTP domain needed for polling bots
